@@ -14,6 +14,9 @@ public static class RabbitMqConfiguration
         {
             configureBus?.Invoke(x);
             
+            // This will help to create queue before launching consumer
+            x.AddConfigureEndpointsCallback((context, name, cfg) => { });
+            
             x.UsingRabbitMq((context, cfg) =>
             {
                 cfg.Host(hostName, "/");
