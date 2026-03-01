@@ -3,7 +3,7 @@ namespace Informer.Models;
 public record Settings
 {
     //Paths
-    public string WorkDirectory { get; init; } = Path.Combine(Directory.GetCurrentDirectory(), "Data");
+    public string WorkDirectory { get; init; } = Path.Combine(AppContext.BaseDirectory, "Samples");
     
     public string ArchiveDirectory => 
             _archiveDirectory ??= Path.Combine(WorkDirectory, "Processed");
@@ -18,5 +18,5 @@ public record Settings
     
     public IEnumerable<string> ImageSupportedFormats { get; init; } = new[] { ".png", ".jpg", ".jpeg" };
     
-    public IEnumerable<string> TextSupportedFormats { get; init; } = new[] { ".txt" };
+    public IEnumerable<string> TextSupportedFormats { get; init; } = new[] { ".txt", ".log", ".json", ".html" };
 }

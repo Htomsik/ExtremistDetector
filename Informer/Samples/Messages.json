@@ -1,0 +1,8 @@
+{
+  "chat_id": "12345",
+  "messages": [
+    { "user": "guest_88", "text": "Is this group safe?" },
+    { "user": "admin", "text": "Yes, but we have a zero-tolerance policy for any abuse or provocation here." },
+    { "user": "bot_99", "text": "To become a professional cryptotrader, you must avoid fake signals. Follow our guide!" }
+  ]
+}
