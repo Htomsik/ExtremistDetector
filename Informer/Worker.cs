@@ -1,4 +1,5 @@
 using ExtremistDetector.Contracts.Models;
+using Informer.Models;
 using MassTransit;
 
 namespace Informer;
@@ -44,11 +45,15 @@ public class Worker : BackgroundService
                     contentType = ContentType.Image;
 
                 IContentReport? report = null;
-
+                var reportId = Guid.NewGuid();
+                
+                _logger.LogInformation("{reportId} with fileName {fileName} processing..", reportId, fileName);
+                
                 switch (contentType)
                 {
                     case ContentType.Text:
                         report = new TextContentReport(
+                            reportId,
                             fileName,
                             await File.ReadAllTextAsync(filePath, stoppingToken),
                             DateTime.UtcNow);
@@ -58,6 +63,7 @@ public class Worker : BackgroundService
                     
                     case ContentType.Image:
                         report = new ImageContentReport(
+                            reportId,
                             fileName,
                             archiveFilePath,  
                             DateTime.UtcNow);
@@ -70,7 +76,7 @@ public class Worker : BackgroundService
                     continue;
                 
                 File.Move(filePath, archiveFilePath, overwrite: true);
-                _logger.LogInformation("File {FileName} ({Type}) processed", fileName, contentType);
+                _logger.LogInformation("{reportId} with fileName {fileName} processed", reportId, fileName);
             }
         }
     }
