@@ -78,6 +78,9 @@ public class Worker : BackgroundService
                 File.Move(filePath, archiveFilePath, overwrite: true);
                 _logger.LogInformation("{reportId} with fileName {fileName} processed", reportId, fileName);
             }
+            
+            // in real projects use FileSystemWatcher instead of this 
+            await Task.Delay(1000 * 5, stoppingToken); 
         }
     }
 }

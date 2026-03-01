@@ -15,6 +15,9 @@ public static class RabbitMqConfiguration
         services.AddMassTransit(x =>
         {
             configureBus?.Invoke(x);
+            
+            x.DisableUsageTelemetry();
+            
             x.UsingRabbitMq((context, cfg) =>
             {
                 cfg.ConfigureQueue();
