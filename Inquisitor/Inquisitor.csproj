@@ -15,8 +15,4 @@
       <ProjectReference Include="..\ExtremistDetector.Contracts\ExtremistDetector.Contracts.csproj" />
       <ProjectReference Include="..\ExtremistDetector.Infrastructure\ExtremistDetector.Infrastructure.csproj" />
     </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Services\" />
-    </ItemGroup>
 </Project>

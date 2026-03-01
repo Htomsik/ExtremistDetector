@@ -1,0 +1,17 @@
+{
+  "Violations": {
+    "ToDelete": [
+      "swear",
+      "provocation"
+
+    ],
+    "Penalty": [
+      "fake",
+      "abuse"
+    ],
+    "CreatorDestroy": [
+      "Paid Python courses",
+      "сryptotrader"
+    ]
+  }
+}

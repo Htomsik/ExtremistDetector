@@ -1,4 +1,4 @@
-namespace Informer;
+namespace Informer.Models;
 
 public record Settings
 {

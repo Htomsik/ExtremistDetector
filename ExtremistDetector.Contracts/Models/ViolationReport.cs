@@ -9,6 +9,7 @@ public record ViolationReport(ViolationType ViolationType,
 
 public enum ViolationType
 {
+    None,
     ToDelete,
     Penalty,
     CreatorDestroy
