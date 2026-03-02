@@ -4,7 +4,9 @@ namespace SamplesGenerator;
 
 public class ImageGenerator
 {
-    private readonly Random _rnd = new();
+    private readonly Random _random = new();
+    
+    private readonly string[] _fonts = { "Arial", "Times New Roman", "Verdana", "Courier New" };
     
     public void Generate(string path, string text)
     {
@@ -19,15 +21,24 @@ public class ImageGenerator
         var canvas = surface.Canvas;
 
         //  Random background color
-        var bgColor = new SKColor((byte)_rnd.Next(0, 256), (byte)_rnd.Next(0, 256), (byte)_rnd.Next(0, 256));
+        var bgColor = new SKColor((byte)_random.Next(0, 256), (byte)_random.Next(0, 256), (byte)_random.Next(0, 256));
         canvas.Clear(bgColor);
 
-        // Random text color
+        // Randomize text
+        var font = _fonts[_random.Next(_fonts.Length)];
+        
+        var fontStyle = _random.Next(3) switch {
+            1 => SKFontStyle.Bold,
+            2 => SKFontStyle.Italic,
+            _ => SKFontStyle.Normal
+        };
+        
         using SKPaint paint = new()
         {
-            Color = new SKColor((byte)_rnd.Next(0, 256), (byte)_rnd.Next(0, 256), (byte)_rnd.Next(0, 256)),
+            Color = new SKColor((byte)_random.Next(0, 256), (byte)_random.Next(0, 256), (byte)_random.Next(0, 256)),
             IsAntialias = true,
             TextSize = 24,
+            Typeface = SKTypeface.FromFamilyName(font, fontStyle)
         };
         
         // Draw chunk

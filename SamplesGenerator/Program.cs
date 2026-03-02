@@ -5,21 +5,21 @@ using Microsoft.Extensions.Configuration;
 using SamplesGenerator;
 
 const string directory = "./Samples";
-const int textSamplesCount = 5000;
-const int imageSamplesCount = 1000;
+const int textSamplesCount = 20000;
+const int imageSamplesCount = 5000;
 
 var config = new ConfigurationBuilder()
     .AddJsonFile("Dictionary.json")
     .AddJsonFile("Templates.json")
     .Build();
 
-var conf = config.GetSection("Violations");
-var violations = conf.Get<List<string>>();
+var conf = config.GetSection("Words");
+var words = conf.Get<List<string>>();
 
 conf = config.GetSection("Templates");
 var templates = conf.Get<List<string>>();
 
-if (violations == null || violations.Count == 0) 
+if (words == null || words.Count == 0) 
     throw new Exception("Violations doesn't exist");
 
 if (templates == null || templates.Count == 0) 
@@ -36,12 +36,18 @@ for (int i = 0; i < textSamplesCount; i++)
 {
     var template = templates[random.Next(templates.Count)];
     
-    // 2 Violationы add more variables
-    var viol1 = violations[random.Next(violations.Count)];
-    var viol2 = violations[random.Next(violations.Count)];
+    // 2 words add more variables
+    var viol1 = words[random.Next(words.Count)];
+    var viol2 = words[random.Next(words.Count)];
      
+    var filePrefix = random.Next(3) switch {
+        1 => "html",
+        2 => "json",
+        _ => "txt",
+    };
+    
     string generatedText = String.Format(template, viol1, viol2);
-    string fileName = $"{directory}/{Guid.NewGuid()}.txt";
+    string fileName = $"{directory}/{Guid.NewGuid()}.{filePrefix}";
     File.WriteAllText(fileName, $"{generatedText}");
 }
 Console.WriteLine("Text generated");
@@ -53,8 +59,8 @@ for (int i = 0; i < imageSamplesCount; i++)
     var template = templates[random.Next(templates.Count)];
     
     // 2 Violationы add more variables
-    var viol1 = violations[random.Next(violations.Count)];
-    var viol2 = violations[random.Next(violations.Count)];
+    var viol1 = words[random.Next(words.Count)];
+    var viol2 = words[random.Next(words.Count)];
      
     string generatedText = String.Format(template, viol1, viol2);
     string fileName = $"{directory}/{Guid.NewGuid()}.png";
