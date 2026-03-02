@@ -1,0 +1,64 @@
+﻿// See https://aka.ms/new-console-template for more information
+
+
+using Microsoft.Extensions.Configuration;
+using SamplesGenerator;
+
+const string directory = "./Samples";
+const int textSamplesCount = 5000;
+const int imageSamplesCount = 1000;
+
+var config = new ConfigurationBuilder()
+    .AddJsonFile("Dictionary.json")
+    .AddJsonFile("Templates.json")
+    .Build();
+
+var conf = config.GetSection("Violations");
+var violations = conf.Get<List<string>>();
+
+conf = config.GetSection("Templates");
+var templates = conf.Get<List<string>>();
+
+if (violations == null || violations.Count == 0) 
+    throw new Exception("Violations doesn't exist");
+
+if (templates == null || templates.Count == 0) 
+    throw new Exception("Templates doesn't exist");
+
+if(Directory.Exists(directory))
+    Directory.Delete(directory, true);
+Directory.CreateDirectory(directory);
+
+var random = new Random();
+
+//Generate text
+for (int i = 0; i < textSamplesCount; i++)
+{
+    var template = templates[random.Next(templates.Count)];
+    
+    // 2 Violationы add more variables
+    var viol1 = violations[random.Next(violations.Count)];
+    var viol2 = violations[random.Next(violations.Count)];
+     
+    string generatedText = String.Format(template, viol1, viol2);
+    string fileName = $"{directory}/{Guid.NewGuid()}.txt";
+    File.WriteAllText(fileName, $"{generatedText}");
+}
+Console.WriteLine("Text generated");
+
+// Generate image
+var imgGenerator = new ImageGenerator();
+for (int i = 0; i < imageSamplesCount; i++)
+{
+    var template = templates[random.Next(templates.Count)];
+    
+    // 2 Violationы add more variables
+    var viol1 = violations[random.Next(violations.Count)];
+    var viol2 = violations[random.Next(violations.Count)];
+     
+    string generatedText = String.Format(template, viol1, viol2);
+    string fileName = $"{directory}/{Guid.NewGuid()}.png";
+    
+    imgGenerator.Generate(fileName, generatedText);
+}
+Console.WriteLine("Image generated");
