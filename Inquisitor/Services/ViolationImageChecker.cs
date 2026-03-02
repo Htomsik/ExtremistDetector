@@ -19,11 +19,13 @@ public class ViolationImageChecker : IViolationChecker<ImageContentReport>
         _ocrProvider = ocrProvider;
     }
     
-    public ViolationType Check(ImageContentReport content)
+    public async Task<ViolationType> Check(ImageContentReport content, CancellationToken cancellationToken = default)
     {
-        var text =  _ocrProvider.GetTextFromUrl(content.Url); 
+        var text = await  _ocrProvider.GetTextFromUrl(content.Url, cancellationToken); 
         
-        var type = _textChecker.Check(text.Result);
+        var type = await _textChecker.Check(text, cancellationToken);
+        
+        // TODO add Yolo or smth for symbolic check
         
         return type;
     }

@@ -31,9 +31,8 @@ public class ViolationTextChecker : IViolationChecker<string>
 
     }
 
-    public ViolationType Check(string content)
+    public async Task<ViolationType> Check(string content, CancellationToken cancellationToken = default)
     {
-       
         var normalizedContext = content.Normalize().ToLowerInvariant();
         if (string.IsNullOrWhiteSpace(normalizedContext))
         {

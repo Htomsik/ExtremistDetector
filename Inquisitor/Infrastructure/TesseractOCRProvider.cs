@@ -29,9 +29,9 @@ public class TesseractOCRProvider : IOCRProvider, IDisposable
         }     
     }
     
-    public async  Task<string> GetTextFromUrl(string url)
+    public async  Task<string> GetTextFromUrl(string url, CancellationToken cancellationToken = default)
     {
-        var timeOut = new CancellationTokenSource();
+        var timeOut = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         timeOut.CancelAfter(TimeSpan.FromSeconds(_ocrSettings.CancelTimeOutSeconds));
         
         try

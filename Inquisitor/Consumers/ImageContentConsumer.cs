@@ -19,7 +19,7 @@ public class ImageContentConsumer : IConsumer<ImageContentReport>
         _logger = logger;
     }
     
-    public Task Consume(ConsumeContext<ImageContentReport> context)
+    public async Task Consume(ConsumeContext<ImageContentReport> context)
     {
         var contentReport = context.Message;
        
@@ -28,14 +28,14 @@ public class ImageContentConsumer : IConsumer<ImageContentReport>
         if (string.IsNullOrEmpty(contentReport.Url))
         {
             _logger.LogWarning("{ContentId} Content not founded.", contentReport.ContentId);
-            return Task.CompletedTask;
+            return;
         }
        
-        var violationType = _violationChecker.Check(contentReport);
+        var violationType = await _violationChecker.Check(contentReport, context.CancellationToken);
         if (violationType == ViolationType.None)
         {
             _logger.LogInformation("{ContentId} processed. No violations", contentReport.ContentId);
-            return Task.CompletedTask;
+            return;
         }
        
         //TODO In ideal add mapper 
@@ -44,12 +44,14 @@ public class ImageContentConsumer : IConsumer<ImageContentReport>
             contentReport.Url, 
             contentReport.CreatedTime);
        
-        _bus.Publish(violationReport);
+        if (context.CancellationToken.IsCancellationRequested)
+        {
+            _logger.LogInformation("{ContentId} canceled", contentReport.ContentId);
+            return;
+        }
+        
+        await _bus.Publish(violationReport);
        
         _logger.LogInformation("{ContentId} processed. Found violations", contentReport.ContentId);
-
-        return Task.CompletedTask;
-        
-        return Task.CompletedTask;
     }
 }

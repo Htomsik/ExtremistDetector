@@ -19,7 +19,7 @@ public class TextContentConsumer : IConsumer<TextContentReport>
         _bus = bus;
     }
     
-    public Task Consume(ConsumeContext<TextContentReport> context)
+    public async Task Consume(ConsumeContext<TextContentReport> context)
     {
        var contentReport = context.Message;
        
@@ -28,14 +28,14 @@ public class TextContentConsumer : IConsumer<TextContentReport>
        if (string.IsNullOrEmpty(contentReport.Content))
        {
            _logger.LogWarning("{ContentId} Content not founded.", contentReport.ContentId);
-           return Task.CompletedTask;
+           return;
        }
        
-       var violationType = _violationChecker.Check(contentReport.Content);
+       var violationType = await _violationChecker.Check(contentReport.Content, context.CancellationToken);
        if (violationType == ViolationType.None)
        {
            _logger.LogInformation("{ContentId} processed. No violations", contentReport.ContentId);
-           return Task.CompletedTask;
+           return;
        }
        
        //TODO In ideal add mapper 
@@ -43,11 +43,15 @@ public class TextContentConsumer : IConsumer<TextContentReport>
            contentReport.Source, 
            contentReport.Content, 
            contentReport.CreatedTime);
+
+       if (context.CancellationToken.IsCancellationRequested)
+       {
+           _logger.LogInformation("{ContentId} canceled", contentReport.ContentId);
+           return;
+       }
        
-       _bus.Publish(violationReport);
+       await _bus.Publish(violationReport);
        
        _logger.LogInformation("{ContentId} processed. Found violations", contentReport.ContentId);
-
-       return Task.CompletedTask;
     }
 }
