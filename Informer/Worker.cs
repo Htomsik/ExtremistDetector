@@ -10,6 +10,7 @@ public class Worker : BackgroundService
     private readonly ILogger<Worker> _logger;
 
     private readonly Settings _settings;
+    private List<Task> _publishTasks;
 
     public Worker(ILogger<Worker> logger, IBus bus)
     {
@@ -17,7 +18,6 @@ public class Worker : BackgroundService
         _bus = bus;
         _settings = new Settings();
     }
-
     
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -38,10 +38,17 @@ public class Worker : BackgroundService
                 _logger.LogInformation("{processId} Processing {count} files...", processId, files.Count());
             }
             
+            _publishTasks = new List<Task>();
             foreach (var file in files)
             {
-                await ProcessFile(file, stoppingToken);
+                await  ProcessFile(file, stoppingToken);
+                if (_publishTasks.Count > 100) // More than 100 bus stattering
+                {
+                    await Task.WhenAll(_publishTasks);
+                    _publishTasks.Clear();
+                }
             }
+            await Task.WhenAll(_publishTasks);
 
             watch.Stop();
             if (files.Count != 0)
@@ -72,37 +79,32 @@ public class Worker : BackgroundService
             contentType = ContentType.Text;
         else if (_settings.ImageSupportedFormats.Contains(ext))
             contentType = ContentType.Image;
-
-        IContentReport? report = null;
+        
         var reportId = Guid.NewGuid();
         
         switch (contentType)
         {
             case ContentType.Text:
-                report = new TextContentReport(
+                var textReport = new TextContentReport(
                     reportId,
                     fileName,
                     await File.ReadAllTextAsync(filePath, stoppingToken),
                     DateTime.UtcNow);
-
-                await _bus.Publish((TextContentReport)report, stoppingToken);
+                
+                File.Move(filePath, archiveFilePath, true);
+                _publishTasks.Add(_bus.Publish(textReport, stoppingToken));
                 break;
 
             case ContentType.Image:
-                report = new ImageContentReport(
+                var imageReport = new ImageContentReport(
                     reportId,
                     fileName,
                     archiveFilePath,
                     DateTime.UtcNow);
-
-                await _bus.Publish((ImageContentReport)report, stoppingToken);
+                
+                File.Move(filePath, archiveFilePath, true);
+                _publishTasks.Add(_bus.Publish(imageReport, stoppingToken));
                 break;
         }
-
-        if (report == null)
-            return;
-
-        File.Move(filePath, archiveFilePath, true);
-       
     }
 }
