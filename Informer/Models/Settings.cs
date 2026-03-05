@@ -3,12 +3,17 @@ namespace Informer.Models;
 public record Settings
 {
     //Paths
-    public string WorkDirectory { get; init; } = Path.Combine(AppContext.BaseDirectory, "Samples");
+    public string WorkDirectory { get; init; } = "Samples";
+    public string ArchiveDirectory { get; init; } = "Processed";
     
-    public string ArchiveDirectory => 
-            _archiveDirectory ??= Path.Combine(WorkDirectory, "Processed");
-    
-    private string? _archiveDirectory;
+    // If path is absolute - use path, else create in current app dir
+    public string FullWorkDirectory => Path.IsPathRooted(WorkDirectory) 
+        ? WorkDirectory 
+        : Path.Combine(AppContext.BaseDirectory, WorkDirectory);
+
+    public string FullArchiveDirectory => Path.IsPathRooted(ArchiveDirectory) 
+        ? ArchiveDirectory 
+        : Path.Combine(WorkDirectory, ArchiveDirectory);
     
     // Formats
     public IEnumerable<string> AllSupportedFormats => _allSupportedFormats ??= ImageSupportedFormats

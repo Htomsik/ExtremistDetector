@@ -1,6 +1,7 @@
 using ExtremistDetector.Contracts.Models;
 using Informer.Models;
 using MassTransit;
+using Microsoft.Extensions.Options;
 
 namespace Informer;
 
@@ -10,20 +11,20 @@ public class Worker : BackgroundService
     private readonly ILogger<Worker> _logger;
 
     private readonly Settings _settings;
-    private List<Task> _publishTasks;
+    private List<Task>? _publishTasks;
 
-    public Worker(ILogger<Worker> logger, IBus bus)
+    public Worker(ILogger<Worker> logger, IBus bus, IOptions<Settings> settings)
     {
         _logger = logger;
         _bus = bus;
-        _settings = new Settings();
+        _settings = settings.Value;
     }
     
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         // Created only if doesn't exist
-        Directory.CreateDirectory(_settings.WorkDirectory);
-        Directory.CreateDirectory(_settings.ArchiveDirectory);
+        Directory.CreateDirectory(_settings.FullWorkDirectory);
+        Directory.CreateDirectory(_settings.FullArchiveDirectory);
 
         while (!stoppingToken.IsCancellationRequested)
         {
@@ -70,7 +71,7 @@ public class Worker : BackgroundService
     {
         // In Real project we need to store files on shared directory
         var fileName = Path.GetFileName(filePath);
-        var archiveFilePath = Path.Combine(_settings.ArchiveDirectory, fileName);
+        var archiveFilePath = Path.Combine(_settings.FullArchiveDirectory, fileName);
         var ext = Path.GetExtension(filePath);
 
         var contentType = ContentType.Unknown;

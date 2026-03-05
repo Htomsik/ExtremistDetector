@@ -11,7 +11,7 @@ var builder = Host.CreateApplicationBuilder(args);
 builder.Services.Configure<OCRSettings>(builder.Configuration.GetSection("OCR"));
 builder.Configuration.AddJsonFile("ViolationTextDictionary.json", optional: false);
 
-builder.Services.AddRabbitMQ("localhost", x =>
+builder.Services.AddRabbitMQ(builder.Configuration, x =>
 {
     x.AddConsumer<TextContentConsumer>();
     x.AddConsumer<ImageContentConsumer>();

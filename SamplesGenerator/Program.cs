@@ -3,15 +3,22 @@
 
 using Microsoft.Extensions.Configuration;
 using SamplesGenerator;
+using SamplesGenerator.Models;
 
-const string directory = "./Samples";
-const int textSamplesCount = 20000;
-const int imageSamplesCount = 5000;
+
+const int textSamplesCount = 10000;
+const int imageSamplesCount = 2000;
 
 var config = new ConfigurationBuilder()
+    .AddJsonFile("appsettings.json", optional: true)
     .AddJsonFile("Dictionary.json")
     .AddJsonFile("Templates.json")
+    .AddEnvironmentVariables() // For Docker 
     .Build();
+
+var appSettings = config.GetSection("Settings").Get<Settings>();
+if(appSettings == null)
+    appSettings = new Settings();
 
 var conf = config.GetSection("Words");
 var words = conf.Get<List<string>>();
@@ -25,9 +32,8 @@ if (words == null || words.Count == 0)
 if (templates == null || templates.Count == 0) 
     throw new Exception("Templates doesn't exist");
 
-if(Directory.Exists(directory))
-    Directory.Delete(directory, true);
-Directory.CreateDirectory(directory);
+if(!Directory.Exists(appSettings.WorkDirectory))
+    Directory.CreateDirectory(appSettings.WorkDirectory);
 
 var random = new Random();
 
@@ -47,7 +53,7 @@ for (int i = 0; i < textSamplesCount; i++)
     };
     
     string generatedText = String.Format(template, viol1, viol2);
-    string fileName = $"{directory}/{Guid.NewGuid()}.{filePrefix}";
+    string fileName = Path.Combine(appSettings.WorkDirectory, $"{Guid.NewGuid()}.{filePrefix}");
     File.WriteAllText(fileName, $"{generatedText}");
 }
 Console.WriteLine("Text generated");
@@ -63,7 +69,7 @@ for (int i = 0; i < imageSamplesCount; i++)
     var viol2 = words[random.Next(words.Count)];
      
     string generatedText = String.Format(template, viol1, viol2);
-    string fileName = $"{directory}/{Guid.NewGuid()}.png";
+    string fileName = Path.Combine(appSettings.WorkDirectory, $"{Guid.NewGuid()}.png");
     
     imgGenerator.Generate(fileName, generatedText);
 }

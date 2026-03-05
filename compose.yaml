@@ -1,0 +1,31 @@
+﻿services:
+  informer:
+    image: informer
+    user: root
+    build:
+      context: .
+      dockerfile: Informer/Dockerfile
+    volumes:
+      - shared_data:/data # Redirect to named tom
+    environment:
+      - RabbitMQ__Host=host.docker.internal  #TODO ADD RabbitMQ service to compose
+      - Settings__WorkDirectory=/data/samples
+      - Settings__ArchiveDirectory=/data/processed
+
+  generator:
+    image: samples-generator
+    profiles:
+      - tools 
+    user: root
+    build:
+      context: .
+      dockerfile: SamplesGenerator/Dockerfile
+    volumes:
+      - shared_data:/data 
+    environment:
+      - Settings__WorkDirectory=/data/samples
+
+    
+# Create Named tom
+volumes:
+  shared_data:
