@@ -2,9 +2,9 @@ namespace Inquisitor.Models;
 
 public class OCRSettings
 {
-    public string DirectoryName { get; init; } 
-    
-    public string Language { get; init; } 
+    public string DirectoryName { get; init; } = "Tesseract";
+
+    public string Language { get; init; } = "eng";
     
     public int MaxEngines { get; init; } 
     

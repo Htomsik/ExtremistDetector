@@ -5,6 +5,7 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <UserSecretsId>dotnet-Inquisitor-3591aee4-0c5c-4239-ac54-51ee25479495</UserSecretsId>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     </PropertyGroup>
 
     <ItemGroup>
@@ -15,5 +16,11 @@
     <ItemGroup>
       <ProjectReference Include="..\ExtremistDetector.Contracts\ExtremistDetector.Contracts.csproj" />
       <ProjectReference Include="..\ExtremistDetector.Infrastructure\ExtremistDetector.Infrastructure.csproj" />
+    </ItemGroup>
+    
+    <ItemGroup>
+      <Content Include="..\.dockerignore">
+        <Link>.dockerignore</Link>
+      </Content>
     </ItemGroup>
 </Project>

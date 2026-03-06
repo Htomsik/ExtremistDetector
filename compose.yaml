@@ -27,7 +27,22 @@
     depends_on:
         rabbitMQ:
           condition: service_healthy
-          
+  
+  inquisitor:
+    user: root
+    image: inquisitor
+    volumes:
+      - shared_data:/data # Redirect to named tom
+    build:
+      context: .
+      dockerfile: Inquisitor/Dockerfile
+    environment:
+      - RabbitMQ__Host=rabbitMQ
+    depends_on:
+      rabbitMQ:
+        condition: service_healthy
+  
+  
   butcher:
     user: root
     image: butcher
@@ -44,8 +59,8 @@
   ## Just a samples generator for testing
   generator:
     image: samples-generator
-    profiles:
-      - tools 
+#    profiles:
+#      - tools 
     user: root
     build:
       context: .
