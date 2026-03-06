@@ -1,13 +1,13 @@
 ﻿FROM mcr.microsoft.com/dotnet/runtime:9.0 AS base
+
+USER root
+### Skia sharp fonts
+RUN apt-get update && apt-get install -y \
+    libfontconfig1 \
+    fonts-liberation \
+    && rm -rf /var/lib/apt/lists/* 
 USER $APP_UID
 WORKDIR /app
-
-
-### Skia sharp
-#RUN apt-get update && apt-get install -y \
-#    libfontconfig1 \
-#    libfreetype6 \
-#    && rm -rf /var/lib/apt/lists/*
 
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
