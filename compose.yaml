@@ -1,4 +1,17 @@
 ﻿services:
+  rabbitMQ: # As a learning project MQ be in same compose 
+    image: rabbitmq:4.0-management
+    user: root
+    container_name: rabbitMq
+    ports:
+      - "5672:5672"   # protocol
+      - "15672:15672" # UI
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+          
   informer:
     image: informer
     user: root
@@ -8,10 +21,27 @@
     volumes:
       - shared_data:/data # Redirect to named tom
     environment:
-      - RabbitMQ__Host=host.docker.internal  #TODO ADD RabbitMQ service to compose
+      - RabbitMQ__Host=rabbitMQ
       - Settings__WorkDirectory=/data/samples
       - Settings__ArchiveDirectory=/data/processed
+    depends_on:
+        rabbitMQ:
+          condition: service_healthy
+          
+  butcher:
+    user: root
+    image: butcher
+    build:
+      context: .
+      dockerfile: Butcher/Dockerfile
+    environment:
+      - RabbitMQ__Host=rabbitMQ
+    depends_on:
+      rabbitMQ:
+        condition: service_healthy
 
+  
+  ## Just a samples generator for testing
   generator:
     image: samples-generator
     profiles:
