@@ -1,5 +1,22 @@
-﻿services:
-  rabbitMQ: # As a learning project MQ be in same compose 
+﻿# FROM VS/RIDER use ANYTIME docker-compose -d --build
+# DON'T USE FAST MODE
+# inquisitor needed custom paths for tesseract
+
+services:
+  
+  redis:
+    image: redis/redis-stack
+    container_name: redisStack
+    ports:
+      - "6379:6379"  # protocol
+      - "8001:8001"  # UI
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+  
+  rabbitMQ: 
     image: rabbitmq:4.0-management
     user: root
     container_name: rabbitMq
@@ -42,7 +59,7 @@
       rabbitMQ:
         condition: service_healthy
   
-  
+
   butcher:
     user: root
     image: butcher
@@ -51,8 +68,11 @@
       dockerfile: Butcher/Dockerfile
     environment:
       - RabbitMQ__Host=rabbitMQ
+      - ConnectionStrings__Redis=redis:6379
     depends_on:
       rabbitMQ:
+        condition: service_healthy
+      redis:
         condition: service_healthy
 
   
