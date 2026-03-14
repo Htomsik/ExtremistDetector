@@ -24,7 +24,7 @@ public class ViolationConsumer : IConsumer<ViolationReport>
         
         _logger.LogInformation("{Source} processing..", contentReport.Source);
 
-        await _violationService.Resolve(contentReport);
+        await _violationService.Resolve(contentReport, context.CancellationToken);
         
         _logger.LogInformation("{Source} processed", contentReport.Source);
     }

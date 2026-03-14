@@ -4,5 +4,5 @@ namespace Butcher.Services;
 
 public interface IViolationService
 {
-    Task Resolve(ViolationReport violationReport);
+    Task Resolve(ViolationReport violationReport, CancellationToken cancellationToken);
 }
