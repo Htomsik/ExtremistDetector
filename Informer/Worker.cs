@@ -88,6 +88,7 @@ public class Worker : BackgroundService
             case ContentType.Text:
                 var textReport = new TextContentReport(
                     reportId,
+                    contentType,
                     fileName,
                     await File.ReadAllTextAsync(filePath, stoppingToken),
                     DateTime.UtcNow);
@@ -99,6 +100,7 @@ public class Worker : BackgroundService
             case ContentType.Image:
                 var imageReport = new ImageContentReport(
                     reportId,
+                    contentType,
                     fileName,
                     archiveFilePath,
                     DateTime.UtcNow);

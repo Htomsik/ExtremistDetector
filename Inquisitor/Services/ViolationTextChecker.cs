@@ -1,6 +1,7 @@
 using System.Collections.Frozen;
 using System.Text.RegularExpressions;
 using ExtremistDetector.Contracts.Models;
+using Inquisitor.Models;
 
 namespace Inquisitor.Services;
 
@@ -42,7 +43,7 @@ public class ViolationTextChecker : IViolationChecker<string>
             .ToFrozenDictionary(x => x!.Type, x => x!.Words);
     }
 
-    public async Task<ViolationType> Check(string content, CancellationToken cancellationToken = default)
+    public async Task<CheckerResult> Check(string content, CancellationToken cancellationToken = default)
     {
         var clearedText = Regex.Replace(content, @"\s", "")
             .Normalize()
@@ -50,20 +51,21 @@ public class ViolationTextChecker : IViolationChecker<string>
         
         if (string.IsNullOrWhiteSpace(clearedText))
         {
-            return ViolationType.None;
+            return new CheckerResult(ViolationType.None, string.Empty);
         }
 
         foreach (var keyVal in _violations)
         {
-            var violation = keyVal.Value;
-            var violationType = keyVal.Key;
+            var violations = keyVal.Value; 
+            var violationType = keyVal.Key; 
             
-            if (violation.Any(x => clearedText.Contains(x)))
+            var violation = violations.FirstOrDefault(x => clearedText.Contains(x));
+            if (violation != null)
             {
-                return violationType;
+                return new CheckerResult(violationType, violation);
             }
         }
         
-        return ViolationType.None;
+        return new CheckerResult(ViolationType.None, string.Empty);
     }
 }

@@ -22,6 +22,7 @@ public class ImageContentConsumer : IConsumer<ImageContentReport>
     public async Task Consume(ConsumeContext<ImageContentReport> context)
     {
         var contentReport = context.Message;
+        var startProcessTime = DateTime.UtcNow;
        
         _logger.LogInformation("{ContentId} processing..", contentReport.ContentId);
        
@@ -31,18 +32,25 @@ public class ImageContentConsumer : IConsumer<ImageContentReport>
             return;
         }
        
-        var violationType = await _violationChecker.Check(contentReport, context.CancellationToken);
-        if (violationType == ViolationType.None)
+        var result = await _violationChecker.Check(contentReport, context.CancellationToken);
+        if (result.Type == ViolationType.None)
         {
             _logger.LogInformation("{ContentId} processed. No violations", contentReport.ContentId);
             return;
         }
        
         //TODO In ideal add mapper 
-        var violationReport = new ViolationReport(violationType, 
+        var violationReport = new ViolationReport(
+            contentReport.ContentId,
+            contentReport.ContentType,
+            result.Type, 
             contentReport.Source, 
             contentReport.Url, 
-            contentReport.CreatedTime);
+            result.TriggeredData,
+            contentReport.CreatedTime,
+            startProcessTime,
+            DateTime.UtcNow
+            );
        
         if (context.CancellationToken.IsCancellationRequested)
         {

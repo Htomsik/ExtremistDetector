@@ -1,6 +1,7 @@
 
 using ExtremistDetector.Contracts.Models;
 using Inquisitor.Infrastructure;
+using Inquisitor.Models;
 
 namespace Inquisitor.Services;
 
@@ -19,7 +20,7 @@ public class ViolationImageChecker : IViolationChecker<ImageContentReport>
         _ocrProvider = ocrProvider;
     }
     
-    public async Task<ViolationType> Check(ImageContentReport content, CancellationToken cancellationToken = default)
+    public async Task<CheckerResult> Check(ImageContentReport content, CancellationToken cancellationToken = default)
     {
         var text = await  _ocrProvider.GetTextFromUrl(content.Url, cancellationToken); 
         
