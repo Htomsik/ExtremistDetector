@@ -6,7 +6,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Butcher", "Butcher\Butcher.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inquisitor", "Inquisitor\Inquisitor.csproj", "{1EE31FD1-B729-4498-8D35-5C553A676B16}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Serices", "Serices", "{213D158E-1F73-494F-8352-0265B0AA8DCC}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{213D158E-1F73-494F-8352-0265B0AA8DCC}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{38AA097A-9E58-4048-965E-453A5C912517}"
 EndProject
@@ -17,6 +17,13 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExtremistDetector.Contracts", "ExtremistDetector.Contracts\ExtremistDetector.Contracts.csproj", "{3A1C39F5-1023-41A4-90C5-00C6FEF24E17}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExtremistDetector.Infrastructure", "ExtremistDetector.Infrastructure\ExtremistDetector.Infrastructure.csproj", "{6DC26560-8C00-4644-B58B-5957F3EB471F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SamplesGenerator", "SamplesGenerator\SamplesGenerator.csproj", "{1518DAC9-EFA5-411A-94E4-DF01F3A82230}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{02D3832F-3934-4F09-A802-B2E8FC5D6B98}"
+	ProjectSection(SolutionItems) = preProject
+		compose.yaml = compose.yaml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -48,6 +55,10 @@ Global
 		{6DC26560-8C00-4644-B58B-5957F3EB471F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6DC26560-8C00-4644-B58B-5957F3EB471F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6DC26560-8C00-4644-B58B-5957F3EB471F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1518DAC9-EFA5-411A-94E4-DF01F3A82230}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1518DAC9-EFA5-411A-94E4-DF01F3A82230}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1518DAC9-EFA5-411A-94E4-DF01F3A82230}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1518DAC9-EFA5-411A-94E4-DF01F3A82230}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{2B4B87A4-72AB-4F12-B447-2BC15C8625A4} = {213D158E-1F73-494F-8352-0265B0AA8DCC}
@@ -56,5 +67,6 @@ Global
 		{18F6DEB9-E1B6-4FD1-8220-02F01F8A39A7} = {213D158E-1F73-494F-8352-0265B0AA8DCC}
 		{3A1C39F5-1023-41A4-90C5-00C6FEF24E17} = {E3CB1A14-993B-4190-BFE8-8208B6DE9DAA}
 		{6DC26560-8C00-4644-B58B-5957F3EB471F} = {E3CB1A14-993B-4190-BFE8-8208B6DE9DAA}
+		{1518DAC9-EFA5-411A-94E4-DF01F3A82230} = {38AA097A-9E58-4048-965E-453A5C912517}
 	EndGlobalSection
 EndGlobal

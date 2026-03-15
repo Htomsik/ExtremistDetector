@@ -1,0 +1,96 @@
+﻿# FROM VS/RIDER use ANYTIME docker-compose -d --build
+# DON'T USE FAST MODE
+# inquisitor needed custom paths for tesseract
+
+services:
+  
+  redis:
+    image: redis/redis-stack
+    container_name: redisStack
+    ports:
+      - "6379:6379"  # protocol
+      - "8001:8001"  # UI
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+  
+  rabbitMQ: 
+    image: rabbitmq:4.0-management
+    user: root
+    container_name: rabbitMq
+    ports:
+      - "5672:5672"   # protocol
+      - "15672:15672" # UI
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+          
+  informer:
+    image: informer
+    user: root
+    build:
+      context: .
+      dockerfile: Informer/Dockerfile
+    volumes:
+      - shared_data:/data # Redirect to named tom
+    environment:
+      - RabbitMQ__Host=rabbitMQ
+      - Settings__WorkDirectory=/data/samples
+      - Settings__ArchiveDirectory=/data/processed
+    depends_on:
+        rabbitMQ:
+          condition: service_healthy
+  
+  inquisitor:
+    user: root
+    image: inquisitor
+    volumes:
+      - shared_data:/data # Redirect to named tom
+    build:
+      context: .
+      dockerfile: Inquisitor/Dockerfile
+    environment:
+      - RabbitMQ__Host=rabbitMQ
+    depends_on:
+      rabbitMQ:
+        condition: service_healthy
+  
+
+  butcher:
+    user: root
+    image: butcher
+    build:
+      context: .
+      dockerfile: Butcher/Dockerfile
+    environment:
+      - RabbitMQ__Host=rabbitMQ
+      - ConnectionStrings__Redis=redis:6379
+    depends_on:
+      rabbitMQ:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  
+  ## Just a samples generator for testing
+  generator:
+    image: samples-generator
+#    profiles:
+#      - tools 
+    user: root
+    build:
+      context: .
+      dockerfile: SamplesGenerator/Dockerfile
+    volumes:
+      - shared_data:/data 
+    environment:
+      - Settings__WorkDirectory=/data/samples
+
+    
+# Create Named tom
+volumes:
+  shared_data:

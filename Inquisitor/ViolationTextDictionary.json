@@ -1,0 +1,36 @@
+{
+  "Violations": {
+    "ToDelete": [
+      "swear",
+      "provocation",
+      "PHP is the best language",
+      "Bitrix developer",
+      "Windows Vista",
+      "I use arch btw",
+      "Tabs instead of spaces",
+      "commit to main",
+      "force push",
+      "no tests"
+    ],
+    "Penalty": [
+      "fake",
+      "abuse",
+      "Clean Architecture",
+      "I use Notepad",
+      "HTML is a programming language"
+    ],
+    "CreatorDestroy": [
+      "Paid Python courses",
+      "сryptotrader",
+      "Successful success",
+      "NFT",
+      "Web3 Visionary",
+      "Passive income 100% per day",
+      "Matrix re-entry mentor",
+      "Senior Tomato Developer",
+      "Rockstar Ninja Coder",
+      "AI-driven blockchain startup",
+      "Free giveaway of 1 BTC"
+    ]
+  }
+}
