@@ -33,6 +33,13 @@ public static class RabbitMqConfiguration
                 cfg.ConfigureEndpoints(context);
             });
         });
+        
+        services.Configure<MassTransitHostOptions>(options =>
+        {
+            options.WaitUntilStarted = false;
+            options.StartTimeout = TimeSpan.FromSeconds(2); 
+        });
+        
         return services;
     }
 

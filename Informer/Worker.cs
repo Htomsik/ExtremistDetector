@@ -1,22 +1,25 @@
 using ExtremistDetector.Contracts.Models;
 using Informer.Models;
 using MassTransit;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
 
 namespace Informer;
 
 public class Worker : BackgroundService
 {
-    private readonly IBus _bus;
+    private readonly IBusControl _bus;
     private readonly ILogger<Worker> _logger;
+    private readonly HealthCheckService _healthCheckService;
 
     private readonly Settings _settings;
     private List<Task>? _publishTasks;
 
-    public Worker(ILogger<Worker> logger, IBus bus, IOptions<Settings> settings)
+    public Worker(ILogger<Worker> logger, IBusControl bus, IOptions<Settings> settings, HealthCheckService healthCheckService)
     {
         _logger = logger;
         _bus = bus;
+        _healthCheckService = healthCheckService;
         _settings = settings.Value;
     }
     
@@ -28,6 +31,14 @@ public class Worker : BackgroundService
 
         while (!stoppingToken.IsCancellationRequested)
         {
+            var health = _bus.CheckHealth();
+            if (health.Status != BusHealthStatus.Healthy)
+            {
+                _logger.LogWarning("Bus is unavailable, waiting...");
+                await Task.Delay(2000, stoppingToken); 
+                continue;
+            }
+            
             var processId = Guid.NewGuid();
             var watch = System.Diagnostics.Stopwatch.StartNew();
             
@@ -42,7 +53,19 @@ public class Worker : BackgroundService
             _publishTasks = new List<Task>();
             foreach (var file in files)
             {
-                await  ProcessFile(file, stoppingToken);
+                if (!IsFileReady(file))
+                    continue;
+                
+                try
+                {
+                    await  ProcessFile(file, stoppingToken);
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError("{processId} Unexpected error in loop: {Message}", processId, e.Message);
+                    continue;
+                }
+                
                 if (_publishTasks.Count > 100) // More than 100 bus stattering
                 {
                     await Task.WhenAll(_publishTasks);
@@ -109,5 +132,26 @@ public class Worker : BackgroundService
                 _publishTasks.Add(_bus.Publish(imageReport, stoppingToken));
                 break;
         }
+    }
+
+    private bool IsFileReady(string filePath)
+    {
+        try
+        {
+            if (!File.Exists(filePath))
+                return false;
+
+            var fileInfo = new FileInfo(filePath);
+            if (fileInfo.Length == 0)
+                return false;
+            
+            using var stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read); // Low cost checking 
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
+        
+        return true;
     }
 }
