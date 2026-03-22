@@ -24,7 +24,6 @@ public static class RabbitMqConfiguration
             
             x.UsingRabbitMq((context, cfg) =>
             {
-                cfg.ConfigureQueue();
                 cfg.Host(hostName, "/", host =>
                 {
                     host.Username(userName);
@@ -36,33 +35,10 @@ public static class RabbitMqConfiguration
         
         services.Configure<MassTransitHostOptions>(options =>
         {
-            options.WaitUntilStarted = false;
-            options.StartTimeout = TimeSpan.FromSeconds(2); 
+            options.WaitUntilStarted = true;
+            options.StartTimeout = TimeSpan.FromSeconds(10); 
         });
         
         return services;
-    }
-
-    /// <summary>
-    ///  Instantly initialize queue and exchanges
-    /// </summary>
-    private static IRabbitMqBusFactoryConfigurator ConfigureQueue(this IRabbitMqBusFactoryConfigurator cfg)
-    {
-        cfg.Publish<TextContentReport>(p => 
-        {
-            p.BindQueue(RabbitMqConstants.TextInquisitor, RabbitMqConstants.TextInquisitor);
-        });
-                
-        cfg.Publish<ImageContentReport>(p => 
-        {
-            p.BindQueue(RabbitMqConstants.ImageInquisitor, RabbitMqConstants.ImageInquisitor);
-        });
-        
-        cfg.Publish<ViolationReport>(p => 
-        {
-            p.BindQueue(RabbitMqConstants.Butcher, RabbitMqConstants.Butcher);
-        });
-        
-        return cfg;
     }
 }
