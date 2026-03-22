@@ -42,8 +42,8 @@ services:
       - Settings__WorkDirectory=/data/samples
       - Settings__ArchiveDirectory=/data/processed
     depends_on:
-        rabbitMQ:
-          condition: service_healthy
+      rabbitMQ:
+        condition: service_healthy
   
   inquisitor:
     user: root

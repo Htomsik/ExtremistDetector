@@ -8,6 +8,7 @@ using SamplesGenerator.Models;
 
 const int textSamplesCount = 10000;
 const int imageSamplesCount = 2000;
+const int garbageSamplesCount = 600;
 
 var config = new ConfigurationBuilder()
     .AddJsonFile("appsettings.json", optional: true)
@@ -74,3 +75,37 @@ for (int i = 0; i < imageSamplesCount; i++)
     imgGenerator.Generate(fileName, generatedText);
 }
 Console.WriteLine("Image generated");
+
+
+// Garbage
+for (int i = 0; i < garbageSamplesCount; i++)
+{
+    var filePrefix = random.Next(3) switch {
+        1 => "html",
+        2 => "json",
+        _ => "txt",
+    };
+    
+    var fileName = Path.Combine(appSettings.WorkDirectory, $"{Guid.NewGuid()}.{filePrefix}");
+
+    switch (new Random().Next(1,5))
+    {
+        // Zero Broken File
+        case 1:
+            File.Create(fileName).Dispose();
+            break;
+        
+        // Non valid file
+        case 2:
+            File.WriteAllText(Path.Combine(appSettings.WorkDirectory, $"{Guid.NewGuid()}.exe"), "I am NOT a virus, trust me BROOOOOO");
+            break;
+        
+        // Lock files
+        case 3:
+            var fs = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.None);
+            _ = Task.Delay(5000).ContinueWith(_ => fs.Dispose());
+            break;
+    }
+}
+
+Console.WriteLine("trash generated");
